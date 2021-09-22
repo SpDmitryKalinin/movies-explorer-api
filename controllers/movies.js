@@ -20,7 +20,6 @@ const createMovie = (req, res, next) => {
     country, director, duration, year, description,
     image, trailer, nameRU, nameEN, thumbnail, movieId,
   } = req.body;
-  const owner = req.user._id;
   Movie.create({
     country,
     director,
@@ -33,12 +32,13 @@ const createMovie = (req, res, next) => {
     nameEN,
     thumbnail,
     movieId,
-    owner,
+    owner: req.user._id,
   })
     .then((movie) => {
       res.status(200).send(movie);
     })
     .catch((err) => {
+      console.log(err);
       if (err.name === 'ValidationError') {
         next(new BadRequest('400: Некорректно внесены данные.'));
       }
@@ -46,13 +46,15 @@ const createMovie = (req, res, next) => {
     });
 };
 
+
 const deleteMovie = (req, res, next) => {
   const owner = req.user._id;
   Movie.findById(req.params.movieId)
     .then((movie) => {
       if (!movie) {
         next(new NotFoundError('404: данные фильма не найдены'));
-      } else if (String(movie.owner) === owner) {
+      }
+      else if (movie.owner._id.toString() === owner) {
         movie.remove().then(() => {
           res.status(200).send(movie);
         })

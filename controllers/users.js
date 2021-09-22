@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const { NODE_ENV, JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
@@ -25,15 +26,12 @@ const createUser = (req, res, next) => {
     name, email, password,
   } = req.body;
   User.findOne({ email }).then((user) => {
-    if (user) {
-      next(new Conflict('409:Пользователь с таким email существует'));
-    }
     bcrypt.hash(password, 10)
       .then((hash) => {
         User.create({
           name, email, password: hash,
         })
-          .then(() => {
+          .then((user) => {
             res.status(200).send({
               _id: user._id,
               name: user.name,
@@ -44,12 +42,15 @@ const createUser = (req, res, next) => {
             if (err.name === 'ValidationError') {
               next(new BadRequest('400: Ошибка в запросе'));
             }
-            next(new ServerError('500: ошибка на сервере'));
+            next(new Conflict('409:Пользователь с таким email существует'));
           });
       })
-      .catch(() => {
+      .catch((err) => {
         next(new ServerError('500: ошибка на сервере'));
       });
+  })
+  .catch((err) => {
+    next(new ServerError('500: ошибка на сервере'));
   });
 };
 
@@ -82,14 +83,18 @@ const login = (req, res, next) => {
       return bcrypt.compare(password, user.password)
         .then((mathed) => {
           if (!mathed) {
+            console.log('!!!');
             next(new Unauthorized('401: Неправильный пароль.'));
           }
-          return user;
+          else{
+            return user;
+          }
         });
     })
-
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' });
       return res
         .status(201)
         .cookie('jwt', token, {
@@ -102,10 +107,7 @@ const login = (req, res, next) => {
     })
 
     .catch((err) => {
-      if (err.message === 'IncorrectEmail') {
-        next(new Unauthorized('401: Неправильный пароль.'));
-      }
-      next(new ServerError('500: ошибка на сервере'));
+        next(new ServerError('500: ошибка на сервере'));
     });
 };
 
