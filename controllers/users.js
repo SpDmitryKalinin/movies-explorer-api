@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -49,9 +50,9 @@ const createUser = (req, res, next) => {
         next(new ServerError('500: ошибка на сервере'));
       });
   })
-  .catch((err) => {
-    next(new ServerError('500: ошибка на сервере'));
-  });
+    .catch((err) => {
+      next(new ServerError('500: ошибка на сервере'));
+    });
 };
 
 // Обновление данных пользователя
@@ -85,8 +86,7 @@ const login = (req, res, next) => {
           if (!mathed) {
             console.log('!!!');
             next(new Unauthorized('401: Неправильный пароль.'));
-          }
-          else{
+          } else {
             return user;
           }
         });
@@ -107,7 +107,7 @@ const login = (req, res, next) => {
     })
 
     .catch((err) => {
-        next(new ServerError('500: ошибка на сервере'));
+      next(new ServerError('500: ошибка на сервере'));
     });
 };
 

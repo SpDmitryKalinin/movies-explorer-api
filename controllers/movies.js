@@ -46,15 +46,13 @@ const createMovie = (req, res, next) => {
     });
 };
 
-
 const deleteMovie = (req, res, next) => {
   const owner = req.user._id;
   Movie.findById(req.params.movieId)
     .then((movie) => {
       if (!movie) {
         next(new NotFoundError('404: данные фильма не найдены'));
-      }
-      else if (movie.owner._id.toString() === owner) {
+      } else if (movie.owner._id.toString() === owner) {
         movie.remove().then(() => {
           res.status(200).send(movie);
         })

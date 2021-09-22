@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const { celebrate, Joi} = require('celebrate');
-const auth = require('./../middlewares/auth');
+const { celebrate, Joi } = require('celebrate');
+const auth = require('../middlewares/auth');
 const userRouter = require('./users');
 const movieRouter = require('./movies');
-const { createUser, login } = require('./../controllers/users');
+const { createUser, login } = require('../controllers/users');
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -26,4 +26,4 @@ router.use(auth);
 router.use('/', movieRouter);
 router.use('/', userRouter);
 
-module.exports = router
+module.exports = router;
