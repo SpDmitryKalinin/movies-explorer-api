@@ -26,7 +26,7 @@ const createUser = (req, res, next) => {
   const {
     name, email, password,
   } = req.body;
-  User.findOne({ email }).then((user) => {
+  User.findOne({ email }).then(() => {
     bcrypt.hash(password, 10)
       .then((hash) => {
         User.create({
@@ -46,11 +46,11 @@ const createUser = (req, res, next) => {
             next(new Conflict('409:Пользователь с таким email существует'));
           });
       })
-      .catch((err) => {
+      .catch(() => {
         next(new ServerError('500: ошибка на сервере'));
       });
   })
-    .catch((err) => {
+    .catch(() => {
       next(new ServerError('500: ошибка на сервере'));
     });
 };
@@ -86,9 +86,8 @@ const login = (req, res, next) => {
           if (!mathed) {
             console.log('!!!');
             next(new Unauthorized('401: Неправильный пароль.'));
-          } else {
-            return user;
           }
+          return user;
         });
     })
     .then((user) => {
@@ -106,7 +105,7 @@ const login = (req, res, next) => {
         .send({ message: 'Авторизация успешно пройдена', token });
     })
 
-    .catch((err) => {
+    .catch(() => {
       next(new ServerError('500: ошибка на сервере'));
     });
 };
