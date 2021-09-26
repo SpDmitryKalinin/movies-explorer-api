@@ -14,7 +14,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const app = express();
 const { PORT = 3000 } = process.env;
 const adress = NODE_ENV === 'production' ? BD_ADRESS : 'mongodb://localhost:27017/bitfilmsdb';
-const rateLimitCount = NODE_ENV === 'production' ? RATE_LIMIT : 10;
+const rateLimitCount = NODE_ENV === 'production' ? RATE_LIMIT : 100;
 const limiter = rateLimit(rateLimitCount);
 
 mongoose.connect(adress, {
