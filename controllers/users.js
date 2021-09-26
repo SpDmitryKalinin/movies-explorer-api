@@ -46,14 +46,13 @@ const createUser = (req, res, next) => {
             next(new Conflict('409:Пользователь с таким email существует'));
           });
       })
-      .catch((err) => {
-        if(!password){
+      .catch(() => {
+        if (!password) {
           next(new BadRequest('400: Укажите пароль!'));
-        }
-        else{
+        } else {
           next(new ServerError('500: ошибка на сервере'));
         }
-    });
+      });
   })
     .catch(() => {
       next(new ServerError('500: ошибка на сервере'));
