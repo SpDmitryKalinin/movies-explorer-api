@@ -27,7 +27,7 @@ mongoose.connect(adress, {
 app.options('*', cors());
 
 app.use(cors({
-  origin: ['http://elmovies.nomoredomains.monster', 'https://elmovies.nomoredomains.monster'],
+  origin: ['http://elmovies.nomoredomains.monster', 'https://elmovies.nomoredomains.monster', 'http://localhost:3000', 'https://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
